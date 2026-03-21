@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gemini-nano-banana-watermark-remover.github.io/sitemap.xml

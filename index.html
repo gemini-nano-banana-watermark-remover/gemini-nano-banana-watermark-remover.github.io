@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gemini Watermark Remover — Remove AI Image Watermarks Online</title>
+  <meta name="description" content="Free online tool to remove the visible Gemini watermark (4-point star) from AI-generated images. Runs entirely in your browser — no upload, no server, fully private.">
+  <meta name="keywords" content="gemini watermark remover, remove gemini watermark, AI image watermark, google gemini watermark, remove star watermark">
+  <link rel="canonical" href="https://gemini-nano-banana-watermark-remover.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Gemini Watermark Remover — Remove AI Image Watermarks Online">
+  <meta property="og:description" content="Free browser-based tool to remove the visible Gemini watermark from AI-generated images. No upload needed — runs 100% client-side.">
+  <meta property="og:url" content="https://gemini-nano-banana-watermark-remover.github.io/">
+  <meta property="og:image" content="https://gemini-nano-banana-watermark-remover.github.io/assets/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Gemini Watermark Remover">
+  <meta name="twitter:description" content="Remove the Gemini star watermark from AI images — free, private, runs in your browser.">
+  <meta name="twitter:image" content="https://gemini-nano-banana-watermark-remover.github.io/assets/og.jpg">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Gemini Watermark Remover",
+    "url": "https://gemini-nano-banana-watermark-remover.github.io/",
+    "description": "Free online tool to remove the visible Gemini watermark (4-point star) from AI-generated images. Runs entirely in your browser.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "browserRequirements": "Requires a modern browser with Canvas API support"
+  }
+  </script>
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f5f5f5;
+      --surface-hover: #ebebeb;
+      --border: #e0e0e0;
+      --border-hover: #ccc;
+      --text: #1a1a1a;
+      --text-dim: #666;
+      --accent: #7c3aed;
+      --accent-dim: rgba(124, 58, 237, 0.08);
+      --accent-glow: rgba(124, 58, 237, 0.12);
+      --success: #16a34a;
+      --error: #dc2626;
+      --label-bg: rgba(255, 255, 255, 0.85);
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', system-ui, sans-serif;
+      --radius: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0a0a0a;
+        --surface: #141414;
+        --surface-hover: #1a1a1a;
+        --border: #222;
+        --border-hover: #333;
+        --text: #e5e5e5;
+        --text-dim: #888;
+        --accent: #a78bfa;
+        --accent-dim: rgba(167, 139, 250, 0.1);
+        --accent-glow: rgba(167, 139, 250, 0.15);
+        --success: #4ade80;
+        --error: #f87171;
+        --label-bg: rgba(10, 10, 10, 0.8);
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface-hover: #1a1a1a;
+      --border: #222;
+      --border-hover: #333;
+      --text: #e5e5e5;
+      --text-dim: #888;
+      --accent: #a78bfa;
+      --accent-dim: rgba(167, 139, 250, 0.1);
+      --accent-glow: rgba(167, 139, 250, 0.15);
+      --success: #4ade80;
+      --error: #f87171;
+      --label-bg: rgba(10, 10, 10, 0.8);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .theme-toggle button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 28px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .theme-toggle button:hover { color: var(--text); }
+
+    .theme-toggle button.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .theme-toggle button svg { width: 14px; height: 14px; }
+
+    /* layout */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* header */
+    header {
+      padding: 1.25rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem;
+    }
+
+    .header-left { flex: 1; min-width: 0; }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .tagline {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-top: 0.15rem;
+    }
+
+    /* main content */
+    main {
+      padding: 3rem 0 4rem;
+    }
+
+    /* drop zone */
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      background: var(--surface);
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .dropzone.dragover {
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .dropzone-icon {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 1rem;
+      color: var(--text-dim);
+      transition: color 0.2s;
+      display: block;
+    }
+
+    .dropzone:hover .dropzone-icon { color: var(--accent); }
+
+    .dropzone-text {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+
+    .dropzone-hint {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      opacity: 0.7;
+    }
+
+    .dropzone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* processing state */
+    .processor {
+      display: none;
+      margin-top: 2rem;
+    }
+
+    .processor.active { display: block; }
+
+    /* status bar */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-dot.processing {
+      background: var(--accent);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .status-dot.done { background: var(--success); }
+    .status-dot.error { background: var(--error); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .status-text { color: var(--text-dim); }
+    .status-text.done { color: var(--success); }
+    .status-text.error { color: var(--error); }
+
+    /* result area */
+    .result {
+      display: none;
+    }
+
+    .result.active { display: block; }
+
+    /* comparison */
+    .comparison {
+      position: relative;
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: col-resize;
+      user-select: none;
+      -webkit-user-select: none;
+      margin-bottom: 1rem;
+    }
+
+    .comparison img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .comparison .after-wrap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .comparison .after-wrap img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: auto;
+      min-width: 100%;
+      object-fit: cover;
+    }
+
+    .slider-line {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 2px;
+      height: 100%;
+      background: var(--accent);
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .slider-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      pointer-events: none;
+      box-shadow: 0 2px 12px rgba(167, 139, 250, 0.3);
+    }
+
+    .slider-handle svg { width: 18px; height: 18px; color: #fff; }
+
+    .comp-labels {
+      position: absolute;
+      top: 0.75rem;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 0.75rem;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .comp-label {
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      background: var(--label-bg);
+      backdrop-filter: blur(8px);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    /* actions */
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      flex: 1;
+    }
+
+    .btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* info section */
+    .info {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .info h2 {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-bottom: 1.25rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .info-card {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .info-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .info-card h3 {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-card p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* demo section */
+    .demo {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .demo h2 {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-bottom: 1.25rem;
+    }
+
+    .demo-comparison {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: col-resize;
+      user-select: none;
+      -webkit-user-select: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .demo-comparison > img {
+      display: block;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+
+    .demo-comparison .after-wrap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .demo-comparison .after-wrap img {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .demo-detail {
+      margin-top: 1.5rem;
+    }
+
+    .demo-detail p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      max-width: 400px;
+    }
+
+    .demo-card {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .demo-card img {
+      width: 100%;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .demo-card .label {
+      text-align: center;
+      padding: 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    /* footer */
+    footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      color: var(--text-dim);
+      opacity: 0.6;
+      font-size: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    /* batch list */
+    .batch-list {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .batch-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .batch-item .name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+    }
+
+    .batch-item .size {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      flex-shrink: 0;
+    }
+
+    .batch-item .batch-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .batch-item .batch-download {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .batch-item .batch-download:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* section icons */
+    .section-icon {
+      width: 18px;
+      height: 18px;
+      display: inline;
+      vertical-align: -3px;
+      margin-right: 0.4rem;
+      color: var(--accent);
+    }
+
+    /* faq */
+    .faq {
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .faq h2 {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-bottom: 1.25rem;
+    }
+
+    .faq-list { display: grid; gap: 0.5rem; }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      transition: border-color 0.2s;
+    }
+
+    details[open] { border-color: var(--accent); }
+
+    summary {
+      padding: 0.85rem 1.25rem;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    summary::after {
+      content: '+';
+      font-family: var(--mono);
+      color: var(--text-dim);
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+    }
+
+    details[open] summary::after {
+      content: '−';
+      color: var(--accent);
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    details p {
+      padding: 0 1.25rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    details code {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      background: var(--border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    /* about */
+    .about {
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .about h2 {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+
+    .about p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 0.75rem;
+    }
+
+    .about a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .about a:hover { text-decoration: underline; }
+
+    /* hidden canvas */
+    #processingCanvas { display: none; }
+
+    @media (max-width: 768px) {
+      .info-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 0 1rem; }
+      main { padding: 2rem 0 3rem; }
+      .dropzone { padding: 2rem 1.25rem; }
+      .info-grid { grid-template-columns: 1fr; }
+      .demo-grid { max-width: 100%; }
+      header { flex-direction: column; text-align: center; }
+      .tagline { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <noscript><p style="text-align:center;padding:2rem">this tool requires javascript to process images in your browser.</p></noscript>
+
+  <div class="container">
+    <header>
+      <div class="header-left">
+        <h1 class="logo">Gemini Watermark Remover</h1>
+        <p class="tagline">remove the Gemini star watermark from AI-generated images — free, private, runs in your browser</p>
+      </div>
+      <div class="theme-toggle" id="themeToggle" aria-label="theme switcher">
+        <button data-theme="light" title="light theme"><i data-lucide="sun"></i></button>
+        <button data-theme="system" title="system theme" class="active"><i data-lucide="monitor"></i></button>
+        <button data-theme="dark" title="dark theme"><i data-lucide="moon"></i></button>
+      </div>
+    </header>
+
+    <main>
+      <!-- drop zone -->
+      <div class="dropzone" id="dropzone">
+        <i data-lucide="upload" class="dropzone-icon"></i>
+        <div class="dropzone-text">drop images here or click to upload</div>
+        <div class="dropzone-hint">png, jpg, webp — multiple files supported — nothing leaves your device</div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple>
+      </div>
+
+      <!-- processing -->
+      <div class="processor" id="processor">
+        <div class="status" id="status">
+          <div class="status-dot processing" id="statusDot"></div>
+          <span class="status-text" id="statusText">processing...</span>
+        </div>
+
+        <ul class="batch-list" id="batchList"></ul>
+      </div>
+
+      <!-- single result with comparison -->
+      <div class="result" id="result">
+        <div class="comparison" id="comp">
+          <img id="beforeImg" alt="original image with Gemini watermark" draggable="false">
+          <div class="after-wrap" id="afterWrap">
+            <img id="afterImg" alt="cleaned image with watermark removed" draggable="false">
+          </div>
+          <div class="slider-line" id="sliderLine"></div>
+          <div class="slider-handle" id="sliderHandle">
+            <i data-lucide="move-horizontal" style="width:18px;height:18px;color:#fff"></i>
+          </div>
+          <div class="comp-labels">
+            <span class="comp-label">original</span>
+            <span class="comp-label">cleaned</span>
+          </div>
+        </div>
+
+        <div class="actions" id="actions"></div>
+      </div>
+
+      <!-- info -->
+      <div class="info">
+        <h2><i data-lucide="sparkles" class="section-icon"></i> how it works</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <i data-lucide="shield-check" class="info-icon"></i>
+            <h3>client-side</h3>
+            <p>images never leave your device — all processing happens in the browser</p>
+          </div>
+          <div class="info-card">
+            <i data-lucide="blend" class="info-icon"></i>
+            <h3>reverse alpha blend</h3>
+            <p>mathematically recovers original pixels using pre-captured alpha maps</p>
+          </div>
+          <div class="info-card">
+            <i data-lucide="scan-search" class="info-icon"></i>
+            <h3>auto-detect</h3>
+            <p>detects watermark size (48×48 or 96×96) based on image dimensions</p>
+          </div>
+          <div class="info-card">
+            <i data-lucide="image" class="info-icon"></i>
+            <h3>lossless output</h3>
+            <p>saves as png to avoid any additional compression artifacts</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- demo -->
+      <div class="demo">
+        <h2><i data-lucide="eye" class="section-icon"></i> example</h2>
+        <div class="demo-comparison" id="demoComp">
+          <img src="assets/before.jpg" alt="AI-generated image with visible Gemini star watermark" draggable="false">
+          <div class="after-wrap" id="demoAfterWrap">
+            <img src="assets/after.jpg" alt="same image after Gemini watermark removal" draggable="false">
+          </div>
+          <div class="slider-line" id="demoSliderLine"></div>
+          <div class="slider-handle" id="demoSliderHandle">
+            <i data-lucide="move-horizontal" style="width:18px;height:18px;color:#fff"></i>
+          </div>
+          <div class="comp-labels">
+            <span class="comp-label">before</span>
+            <span class="comp-label">after</span>
+          </div>
+        </div>
+        <div class="demo-detail">
+          <p>zoom into the watermark area</p>
+          <div class="demo-grid">
+            <div class="demo-card">
+              <img src="assets/detail-before.jpg" alt="zoomed view of Gemini 4-point star watermark on image">
+              <div class="label">before</div>
+            </div>
+            <div class="demo-card">
+              <img src="assets/detail-after.jpg" alt="same area after watermark removal showing clean pixels">
+              <div class="label">after</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- faq -->
+      <div class="faq" id="faq">
+        <h2><i data-lucide="help-circle" class="section-icon"></i> frequently asked questions</h2>
+        <div class="faq-list">
+          <details>
+            <summary>what is the Gemini watermark?</summary>
+            <p>Google Gemini adds a small semi-transparent 4-point star watermark to AI-generated images. It appears in the bottom-right corner of every image created by Gemini's image generation models. The watermark is 48×48 pixels on smaller images and 96×96 pixels on images larger than 1024×1024.</p>
+          </details>
+          <details>
+            <summary>is this tool safe to use?</summary>
+            <p>Yes. This tool runs entirely in your browser using the Canvas API. Your images are never uploaded to any server — all processing happens locally on your device. You can verify this by checking the network tab in your browser's developer tools while using the tool.</p>
+          </details>
+          <details>
+            <summary>how does the watermark removal work?</summary>
+            <p>The tool uses reverse alpha blending to mathematically recover the original pixel values. The Gemini watermark is applied as a semi-transparent white overlay with a known alpha pattern. By capturing this alpha pattern (the alpha map), we can reverse the blending equation: <code>original = (watermarked - alpha × 255) / (1 - alpha)</code> for each color channel.</p>
+          </details>
+          <details>
+            <summary>what image formats are supported?</summary>
+            <p>You can upload PNG, JPEG, and WebP images. The output is always saved as lossless PNG to avoid introducing any compression artifacts during the watermark removal process.</p>
+          </details>
+          <details>
+            <summary>can I process multiple images at once?</summary>
+            <p>Yes. You can select or drag-and-drop multiple images at once. Each image is processed sequentially and you can download them individually or all at once.</p>
+          </details>
+          <details>
+            <summary>does this remove EXIF metadata too?</summary>
+            <p>Yes. When the image is drawn to the browser's Canvas element for processing, all EXIF and metadata is stripped automatically. The output PNG contains only pixel data.</p>
+          </details>
+        </div>
+      </div>
+
+      <!-- about -->
+      <section class="about" id="about">
+        <h2><i data-lucide="info" class="section-icon"></i> about this tool</h2>
+        <p>Gemini Watermark Remover is a free, open-source tool that removes the visible star-shaped watermark Google Gemini adds to AI-generated images. Unlike other watermark removal tools that use AI inpainting or blur effects, this tool mathematically reverses the exact blending operation, producing pixel-perfect results with zero quality loss.</p>
+        <p>The alpha maps used for removal were captured from Gemini's watermark pattern and are included in the tool. The approach is based on work by <a href="https://github.com/GargantuaX/gemini-watermark-remover">GargantuaX</a> and <a href="https://github.com/allenk/GeminiWatermarkTool">allenk</a>.</p>
+      </section>
+    </main>
+
+    <footer>
+      <a href="https://github.com/gemini-nano-banana-watermark-remover/gemini-nano-banana-watermark-remover.github.io">source</a> ·
+      <a href="https://github.com/gold-ignot/gemini-watermark-remover">cli tool</a> ·
+      based on <a href="https://github.com/GargantuaX/gemini-watermark-remover">GargantuaX</a> &
+      <a href="https://github.com/allenk/GeminiWatermarkTool">allenk</a>
+    </footer>
+  </div>
+
+  <canvas id="processingCanvas"></canvas>
+
+  <script>
+    // watermark removal constants (matching the cli tool)
+    const ALPHA_NOISE_FLOOR = 3 / 255;
+    const ALPHA_THRESHOLD = 0.002;
+    const MAX_ALPHA = 0.99;
+    const LOGO_VALUE = 255;
+
+    // cache alpha maps
+    let alphaMap48 = null;
+    let alphaMap96 = null;
+
+    async function loadAlphaMap(url, size) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = size;
+          c.height = size;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(img, 0, 0, size, size);
+          const data = ctx.getImageData(0, 0, size, size).data;
+          const alphaMap = new Float32Array(size * size);
+          for (let i = 0; i < alphaMap.length; i++) {
+            const idx = i * 4; // RGBA in canvas
+            const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+            alphaMap[i] = Math.max(r, g, b) / 255.0;
+          }
+          resolve(alphaMap);
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
+    async function ensureAlphaMaps() {
+      if (!alphaMap48) alphaMap48 = await loadAlphaMap('assets/bg_48.png', 48);
+      if (!alphaMap96) alphaMap96 = await loadAlphaMap('assets/bg_96.png', 96);
+    }
+
+    function removeWatermark(imageData) {
+      const { width, height, data } = imageData;
+
+      const isLarge = width > 1024 && height > 1024;
+      const logoSize = isLarge ? 96 : 48;
+      const margin = isLarge ? 64 : 32;
+      const alphaMap = isLarge ? alphaMap96 : alphaMap48;
+
+      const wx = width - margin - logoSize;
+      const wy = height - margin - logoSize;
+
+      // clone pixel data
+      const out = new Uint8ClampedArray(data);
+
+      for (let row = 0; row < logoSize; row++) {
+        for (let col = 0; col < logoSize; col++) {
+          const alphaIdx = row * logoSize + col;
+          const rawAlpha = alphaMap[alphaIdx];
+
+          const signalAlpha = Math.max(0, rawAlpha - ALPHA_NOISE_FLOOR);
+          if (signalAlpha < ALPHA_THRESHOLD) continue;
+
+          const alpha = Math.min(rawAlpha, MAX_ALPHA);
+          const oneMinusAlpha = 1.0 - alpha;
+
+          const imgIdx = ((wy + row) * width + (wx + col)) * 4;
+
+          for (let c = 0; c < 3; c++) {
+            const watermarked = data[imgIdx + c];
+            const original = (watermarked - alpha * LOGO_VALUE) / oneMinusAlpha;
+            out[imgIdx + c] = Math.max(0, Math.min(255, Math.round(original)));
+          }
+        }
+      }
+
+      return new ImageData(out, width, height);
+    }
+
+    // strip metadata by redrawing through canvas (EXIF is lost)
+    function loadImageClean(file) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error('failed to load image'));
+        };
+        img.src = url;
+      });
+    }
+
+    async function processFile(file) {
+      await ensureAlphaMaps();
+
+      const img = await loadImageClean(file);
+      const canvas = document.getElementById('processingCanvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, img.width, img.height);
+      const cleaned = removeWatermark(imageData);
+
+      ctx.putImageData(cleaned, 0, 0);
+
+      return {
+        beforeUrl: imageToDataUrl(img),
+        afterUrl: canvas.toDataURL('image/png'),
+        width: img.width,
+        height: img.height,
+        filename: file.name.replace(/\.[^.]+$/, '') + '.clean.png',
+      };
+    }
+
+    function imageToDataUrl(img) {
+      const c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      return c.toDataURL('image/png');
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function downloadUrl(url, filename) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+    }
+
+    // ui elements
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const processor = document.getElementById('processor');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const batchList = document.getElementById('batchList');
+    const result = document.getElementById('result');
+    const beforeImg = document.getElementById('beforeImg');
+    const afterImg = document.getElementById('afterImg');
+    const actions = document.getElementById('actions');
+    const comp = document.getElementById('comp');
+    const afterWrap = document.getElementById('afterWrap');
+    const sliderLine = document.getElementById('sliderLine');
+    const sliderHandle = document.getElementById('sliderHandle');
+
+    // drag and drop
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+
+    async function handleFiles(fileList) {
+      const files = [...fileList].filter(f => f.type.startsWith('image/'));
+      if (!files.length) return;
+
+      // reset
+      result.classList.remove('active');
+      processor.classList.add('active');
+      batchList.innerHTML = '';
+      actions.innerHTML = '';
+
+      const results = [];
+
+      // build batch list ui
+      files.forEach((f, i) => {
+        const li = document.createElement('li');
+        li.className = 'batch-item';
+        li.id = 'batch-' + i;
+        li.innerHTML = `
+          <div class="batch-status" style="background:var(--border)"></div>
+          <span class="name">${f.name}</span>
+          <span class="size">${formatSize(f.size)}</span>
+        `;
+        batchList.appendChild(li);
+      });
+
+      statusDot.className = 'status-dot processing';
+      statusText.className = 'status-text';
+      statusText.textContent = `processing ${files.length} image${files.length > 1 ? 's' : ''}...`;
+
+      for (let i = 0; i < files.length; i++) {
+        const item = document.getElementById('batch-' + i);
+        const dot = item.querySelector('.batch-status');
+        dot.style.background = 'var(--accent)';
+        dot.style.animation = 'pulse 1s ease-in-out infinite';
+
+        statusText.textContent = `processing ${i + 1} of ${files.length}...`;
+
+        try {
+          // yield to UI
+          await new Promise(r => setTimeout(r, 10));
+          const res = await processFile(files[i]);
+          results.push(res);
+
+          dot.style.background = 'var(--success)';
+          dot.style.animation = 'none';
+
+          // add individual download button
+          const dlBtn = document.createElement('button');
+          dlBtn.className = 'batch-download';
+          dlBtn.textContent = 'save';
+          dlBtn.onclick = () => downloadUrl(res.afterUrl, res.filename);
+          item.appendChild(dlBtn);
+        } catch (err) {
+          dot.style.background = 'var(--error)';
+          dot.style.animation = 'none';
+          console.error('failed to process', files[i].name, err);
+        }
+      }
+
+      // done
+      statusDot.className = 'status-dot done';
+      statusText.className = 'status-text done';
+      statusText.textContent = `done — ${results.length} image${results.length > 1 ? 's' : ''} cleaned`;
+
+      if (results.length === 0) {
+        statusDot.className = 'status-dot error';
+        statusText.className = 'status-text error';
+        statusText.textContent = 'failed to process images';
+        return;
+      }
+
+      // show comparison for last (or only) image
+      const last = results[results.length - 1];
+      beforeImg.src = last.beforeUrl;
+      afterImg.src = last.afterUrl;
+      result.classList.add('active');
+
+      // reset slider
+      afterWrap.style.width = '50%';
+      sliderLine.style.left = '50%';
+      sliderHandle.style.left = '50%';
+
+      // action buttons
+      if (results.length === 1) {
+        actions.innerHTML = `
+          <button class="btn btn-primary" id="downloadBtn">
+            <i data-lucide="download"></i>
+            download cleaned image
+          </button>
+          <button class="btn btn-ghost" id="resetBtn">
+            new image
+          </button>
+        `;
+        lucide.createIcons();
+        document.getElementById('downloadBtn').onclick = () => downloadUrl(last.afterUrl, last.filename);
+      } else {
+        actions.innerHTML = `
+          <button class="btn btn-primary" id="downloadAllBtn">
+            <i data-lucide="download"></i>
+            download all (${results.length})
+          </button>
+          <button class="btn btn-ghost" id="resetBtn">
+            new batch
+          </button>
+        `;
+        lucide.createIcons();
+        document.getElementById('downloadAllBtn').onclick = () => {
+          results.forEach(r => downloadUrl(r.afterUrl, r.filename));
+        };
+      }
+
+      document.getElementById('resetBtn').onclick = () => {
+        processor.classList.remove('active');
+        result.classList.remove('active');
+        batchList.innerHTML = '';
+        actions.innerHTML = '';
+        fileInput.value = '';
+      };
+    }
+
+    // comparison slider
+    let dragging = false;
+
+    function setSlider(x) {
+      const rect = comp.getBoundingClientRect();
+      let pct = ((x - rect.left) / rect.width) * 100;
+      pct = Math.max(0, Math.min(100, pct));
+      afterWrap.style.width = pct + '%';
+      sliderLine.style.left = pct + '%';
+      sliderHandle.style.left = pct + '%';
+    }
+
+    comp.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      comp.setPointerCapture(e.pointerId);
+      setSlider(e.clientX);
+    });
+
+    comp.addEventListener('pointermove', (e) => {
+      if (dragging) setSlider(e.clientX);
+    });
+
+    comp.addEventListener('pointerup', () => { dragging = false; });
+
+    // sync demo after image width to match container
+    function syncDemoAfterWidth() {
+      const demoAfterImg = document.querySelector('#demoComp .after-wrap img');
+      const compW = document.getElementById('demoComp').offsetWidth;
+      demoAfterImg.style.width = compW + 'px';
+    }
+    window.addEventListener('resize', syncDemoAfterWidth);
+    document.querySelector('#demoComp > img').addEventListener('load', syncDemoAfterWidth);
+    syncDemoAfterWidth();
+
+    // demo comparison slider
+    const demoComp = document.getElementById('demoComp');
+    const demoAfterWrap = document.getElementById('demoAfterWrap');
+    const demoSliderLine = document.getElementById('demoSliderLine');
+    const demoSliderHandle = document.getElementById('demoSliderHandle');
+    let demoDragging = false;
+
+    function setDemoSlider(x) {
+      const rect = demoComp.getBoundingClientRect();
+      let pct = ((x - rect.left) / rect.width) * 100;
+      pct = Math.max(0, Math.min(100, pct));
+      demoAfterWrap.style.width = pct + '%';
+      demoSliderLine.style.left = pct + '%';
+      demoSliderHandle.style.left = pct + '%';
+    }
+
+    demoComp.addEventListener('pointerdown', (e) => {
+      demoDragging = true;
+      demoComp.setPointerCapture(e.pointerId);
+      setDemoSlider(e.clientX);
+    });
+    demoComp.addEventListener('pointermove', (e) => {
+      if (demoDragging) setDemoSlider(e.clientX);
+    });
+    demoComp.addEventListener('pointerup', () => { demoDragging = false; });
+
+    // theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const stored = localStorage.getItem('theme');
+    if (stored && stored !== 'system') {
+      document.documentElement.setAttribute('data-theme', stored);
+    }
+    function updateToggleUI(theme) {
+      themeToggle.querySelectorAll('button').forEach(b => {
+        b.classList.toggle('active', b.dataset.theme === theme);
+      });
+    }
+    if (stored) updateToggleUI(stored);
+    themeToggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const theme = btn.dataset.theme;
+      if (theme === 'system') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.removeItem('theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+      }
+      updateToggleUI(theme);
+    });
+
+    // init lucide icons
+    lucide.createIcons();
+  </script>
+  <script data-goatcounter="https://gemini-nano-bananana-watermark-remover.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
