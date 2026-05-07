@@ -178,48 +178,48 @@
       padding: 3rem 0 4rem;
     }
 
-    /* consent gate */
-    .consent {
+    /* inline consent (above download) */
+    .consent-inline {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 0.65rem;
       padding: 0.85rem 1rem;
-      margin-bottom: 1rem;
       border: 1px solid var(--border);
       border-radius: 8px;
       background: var(--surface);
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--text-dim);
       cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
-      line-height: 1.5;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+      line-height: 1.45;
     }
 
-    .consent:hover { border-color: var(--border-hover); }
+    .consent-inline:hover { border-color: var(--border-hover); }
 
-    .consent input {
-      margin-top: 0.2rem;
-      flex-shrink: 0;
-      width: 14px;
-      height: 14px;
+    .consent-inline input {
+      width: 16px;
+      height: 16px;
       accent-color: var(--accent);
+      flex-shrink: 0;
       cursor: pointer;
     }
 
-    .consent.checked {
+    .consent-inline.checked {
       border-color: var(--success);
       color: var(--text);
     }
 
-    .consent.nudge {
-      animation: nudge 0.4s ease-in-out;
-      border-color: var(--error);
+    .consent-inline.attention {
+      animation: consent-nudge 0.45s ease;
+      border-color: var(--accent);
+      background: var(--accent-dim);
     }
 
-    @keyframes nudge {
+    @keyframes consent-nudge {
       0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      75% { transform: translateX(4px); }
+      20% { transform: translateX(-4px); }
+      60% { transform: translateX(4px); }
     }
 
     /* drop zone */
@@ -237,17 +237,6 @@
     .dropzone:hover, .dropzone.dragover {
       border-color: var(--accent);
       background: var(--accent-dim);
-    }
-
-    .dropzone.locked {
-      opacity: 0.55;
-      cursor: not-allowed;
-      filter: grayscale(0.5);
-    }
-
-    .dropzone.locked:hover {
-      border-color: var(--border);
-      background: var(--surface);
     }
 
     .dropzone.dragover {
@@ -428,7 +417,36 @@
       border: 1px solid var(--border);
     }
 
+    /* result header (achievement style) */
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .result-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      color: var(--success);
+    }
+
+    .result-status svg { width: 18px; height: 18px; }
+
+    .result-meta {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
     /* actions */
+    .actions-block { margin-top: 1rem; }
+
     .actions {
       display: flex;
       gap: 0.75rem;
@@ -468,136 +486,312 @@
 
     .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-    /* upsell (post-result affiliate strip) */
-    .upsell {
-      margin-top: 2.25rem;
-      padding-top: 1.75rem;
+    /* hero variant — used for the download CTA, matches the Pro panel button */
+    .btn-hero {
+      width: 100%;
+      justify-content: center;
+      padding: 0.95rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), #c084fc);
+      box-shadow: 0 4px 14px rgba(167, 139, 250, 0.28);
+    }
+
+    .btn-hero:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+    }
+
+    .btn-hero svg { width: 18px; height: 18px; }
+
+    /* gated download button (visible when consent is pending) */
+    .btn[data-needs-consent] .icon-locked { display: none; }
+
+    body.consent-pending .btn[data-needs-consent] {
+      background: var(--surface);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    body.consent-pending .btn[data-needs-consent]:hover {
+      filter: none;
+      transform: none;
+      box-shadow: none;
+    }
+
+    body.consent-pending .btn[data-needs-consent] .icon-locked { display: inline; }
+    body.consent-pending .btn[data-needs-consent] .icon-unlocked { display: none; }
+    body.consent-pending .btn[data-needs-consent] .label-unlocked { display: none; }
+    .btn[data-needs-consent] .label-locked { display: none; }
+    body.consent-pending .btn[data-needs-consent] .label-locked { display: inline; }
+
+    /* pipeline (numbered step cards) */
+    .pipeline {
+      margin-top: 2.5rem;
+      padding-top: 2rem;
       border-top: 1px solid var(--border);
     }
 
-    .upsell-title {
+    .pipeline-title {
       font-family: var(--mono);
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 500;
       color: var(--text-dim);
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
-    .upsell-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-    }
-
-    .upsell-card {
-      display: block;
-      padding: 1.1rem 1.25rem;
+    .step-card {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
       border-radius: var(--radius);
       border: 1px solid var(--border);
       background: var(--surface);
-      color: var(--text);
       text-decoration: none;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      position: relative;
       transition: border-color 0.2s, transform 0.2s, background 0.2s;
+      overflow: hidden;
     }
 
-    .upsell-card:hover {
-      border-color: var(--accent);
+    .step-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--brand-color, var(--accent));
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.25s ease;
+    }
+
+    .step-card:hover {
+      border-color: var(--brand-color, var(--accent));
       background: var(--surface-hover);
       transform: translateY(-1px);
     }
 
-    .upsell-card-icon {
-      width: 22px;
-      height: 22px;
-      color: var(--accent);
-      margin-bottom: 0.65rem;
-      display: block;
+    .step-card:hover::before { transform: scaleY(1); transform-origin: top; }
+
+    .step-card[data-brand="topaz"]    { --brand-color: #ff6b1a; }
+    .step-card[data-brand="magnific"] { --brand-color: #6366f1; }
+    .step-card[data-brand="pollo"]    { --brand-color: #14b8a6; }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 96px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 0.5rem;
+      border-right: 1px solid var(--border);
+      background: var(--bg);
+      gap: 0.45rem;
     }
 
-    .upsell-card-tag {
+    .step-num-label {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--brand-color, var(--text));
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .step-num-icon {
+      width: 22px;
+      height: 22px;
+      color: var(--brand-color, var(--accent));
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+      padding: 1rem 1.25rem;
+    }
+
+    .step-action {
       font-family: var(--mono);
       font-size: 0.7rem;
       color: var(--text-dim);
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.15rem;
     }
 
-    .upsell-card-name {
-      font-size: 0.95rem;
+    .step-brand {
+      font-size: 1.05rem;
       font-weight: 600;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.4rem;
     }
 
-    .upsell-card-desc {
-      font-size: 0.8rem;
+    .step-desc {
+      font-size: 0.85rem;
       color: var(--text-dim);
       line-height: 1.55;
+      margin-bottom: 0.65rem;
     }
 
+    .step-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--brand-color, var(--accent));
+      font-weight: 500;
+    }
+
+    .step-cta svg { width: 14px; height: 14px; transition: transform 0.2s; }
+    .step-card:hover .step-cta svg { transform: translateX(3px); }
+
     .upsell-disclosure {
-      margin-top: 0.85rem;
+      margin-top: 1rem;
       font-size: 0.7rem;
       color: var(--text-dim);
       opacity: 0.7;
     }
 
-    /* pro waitlist cta */
-    .pro-cta {
-      margin-top: 1.5rem;
-      padding: 1.5rem 1.5rem 1.4rem;
+    /* pro panel (premium escape hatch) */
+    .pro-panel {
+      margin-top: 1.75rem;
+      padding: 1.75rem;
       border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--surface);
+      border: 1px solid var(--accent);
+      background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 65%);
       position: relative;
       overflow: hidden;
     }
 
-    .pro-cta::before {
+    .pro-panel::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top right, var(--accent-glow), transparent 60%);
+      background: radial-gradient(circle at top right, var(--accent-glow) 0%, transparent 55%);
       pointer-events: none;
-      opacity: 0.6;
     }
 
-    .pro-cta > * { position: relative; }
+    .pro-panel > * { position: relative; }
 
-    .pro-cta-badge {
-      display: inline-block;
-      padding: 0.18rem 0.55rem;
+    .pro-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.22rem 0.65rem;
       border-radius: 4px;
-      background: var(--accent-dim);
-      color: var(--accent);
+      background: var(--accent);
+      color: #fff;
       font-family: var(--mono);
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      margin-bottom: 0.65rem;
+      font-weight: 500;
     }
 
-    .pro-cta-title {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
+    .pro-badge svg { width: 12px; height: 12px; }
+
+    .pro-scarcity {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
     }
 
-    .pro-cta-body {
+    .pro-headline {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .pro-headline h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .pro-price {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+
+    .pro-amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .pro-tier {
       font-size: 0.85rem;
       color: var(--text-dim);
-      line-height: 1.65;
-      margin-bottom: 1rem;
+    }
+
+    .pro-tagline {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 1.1rem;
       max-width: 60ch;
     }
 
-    .pro-cta-btn {
-      display: inline-flex;
+    .pro-features {
+      list-style: none;
+      margin-bottom: 1.4rem;
     }
 
-    .pro-cta-fine {
-      margin-top: 0.85rem;
-      font-size: 0.7rem;
+    .pro-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.88rem;
+      margin-bottom: 0.45rem;
+      color: var(--text);
+    }
+
+    .pro-features svg {
+      width: 14px;
+      height: 14px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .pro-cta-btn {
+      display: inline-flex !important;
+      flex: 0 0 auto !important;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), #c084fc);
+      box-shadow: 0 4px 14px rgba(167, 139, 250, 0.28);
+      color: #fff;
+    }
+
+    .pro-cta-btn:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+    }
+
+    .pro-fine {
+      margin-top: 0.9rem;
+      font-size: 0.72rem;
       color: var(--text-dim);
-      opacity: 0.75;
       font-style: italic;
     }
 
@@ -943,7 +1137,6 @@
 
     @media (max-width: 768px) {
       .info-grid { grid-template-columns: 1fr 1fr; }
-      .upsell-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 640px) {
@@ -954,6 +1147,12 @@
       .demo-grid { max-width: 100%; }
       header { flex-direction: column; text-align: center; }
       .tagline { text-align: center; }
+      .step-num { width: 72px; padding: 0.85rem 0.4rem; }
+      .step-num-label { font-size: 1.2rem; }
+      .step-body { padding: 0.85rem 1rem; }
+      .pro-panel { padding: 1.25rem; }
+      .pro-headline h3 { font-size: 1.3rem; }
+      .pro-amount { font-size: 1.7rem; }
     }
   </style>
 </head>
@@ -974,18 +1173,12 @@
     </header>
 
     <main>
-      <!-- consent gate -->
-      <label class="consent" id="consent" for="consentCheck">
-        <input type="checkbox" id="consentCheck">
-        <span>I confirm these images are my own AI-generated content or content I have rights to.</span>
-      </label>
-
       <!-- drop zone -->
-      <div class="dropzone locked" id="dropzone">
+      <div class="dropzone" id="dropzone">
         <i data-lucide="upload" class="dropzone-icon"></i>
         <div class="dropzone-text">drop images here or click to upload</div>
         <div class="dropzone-hint">png, jpg, webp — multiple files supported — nothing leaves your device</div>
-        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple disabled>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple>
       </div>
 
       <!-- processing -->
@@ -1000,6 +1193,14 @@
 
       <!-- single result with comparison -->
       <div class="result" id="result">
+        <div class="result-header">
+          <span class="result-status">
+            <i data-lucide="check-circle-2"></i>
+            <span>watermark removed</span>
+          </span>
+          <span class="result-meta" id="resultMeta"></span>
+        </div>
+
         <div class="comparison" id="comp">
           <img id="beforeImg" alt="original image with Gemini watermark" draggable="false">
           <div class="after-wrap" id="afterWrap">
@@ -1015,44 +1216,85 @@
           </div>
         </div>
 
-        <div class="actions" id="actions"></div>
+        <div class="actions-block">
+          <label class="consent-inline" id="consentInline" for="consentCheck">
+            <input type="checkbox" id="consentCheck">
+            <span>I confirm these images are my own AI-generated content or content I have rights to.</span>
+          </label>
+          <div class="actions" id="actions"></div>
+        </div>
 
-        <!-- post-clean affiliate strip -->
-        <section class="upsell" aria-label="recommended next steps">
-          <h3 class="upsell-title">now that your image is clean...</h3>
-          <div class="upsell-grid">
-            <a class="upsell-card" href="https://topazlabs.com/ref/PLACEHOLDER_TOPAZ" rel="sponsored noopener" target="_blank">
-              <i data-lucide="zoom-in" class="upsell-card-icon"></i>
-              <div class="upsell-card-tag">upscale to 4K</div>
-              <div class="upsell-card-name">Topaz Gigapixel</div>
-              <div class="upsell-card-desc">Industry-standard AI upscaler. Take your clean Gemini image to print resolution.</div>
-            </a>
-            <a class="upsell-card" href="https://magnific.ai/?via=PLACEHOLDER_MAGNIFIC" rel="sponsored noopener" target="_blank">
-              <i data-lucide="sparkles" class="upsell-card-icon"></i>
-              <div class="upsell-card-tag">add detail</div>
-              <div class="upsell-card-name">Magnific AI</div>
-              <div class="upsell-card-desc">Add realistic detail and texture during upscale. Best for portraits and complex scenes.</div>
-            </a>
-            <a class="upsell-card" href="https://pollo.ai/?ref=PLACEHOLDER_POLLO" rel="sponsored noopener" target="_blank">
-              <i data-lucide="film" class="upsell-card-icon"></i>
-              <div class="upsell-card-tag">animate it</div>
-              <div class="upsell-card-name">Pollo AI</div>
-              <div class="upsell-card-desc">Turn your image into video with Kling, Runway, Veo, or Pika — one subscription.</div>
-            </a>
-          </div>
+        <!-- pipeline (numbered next-step cards) -->
+        <section class="pipeline" aria-label="next steps in your workflow">
+          <h2 class="pipeline-title"><i data-lucide="git-branch" class="section-icon"></i> next steps in your workflow</h2>
+
+          <a class="step-card" href="https://topazlabs.com/ref/PLACEHOLDER_TOPAZ" rel="sponsored noopener" target="_blank" data-brand="topaz">
+            <div class="step-num">
+              <span class="step-num-label">01</span>
+              <i data-lucide="zoom-in" class="step-num-icon"></i>
+            </div>
+            <div class="step-body">
+              <div class="step-action">scale up to 4K+</div>
+              <div class="step-brand">Topaz Gigapixel</div>
+              <div class="step-desc">Industry-standard AI upscaler. Take your clean Gemini image to print resolution — 1024×1024 → 8192×8192 in seconds.</div>
+              <span class="step-cta">try Topaz <i data-lucide="arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a class="step-card" href="https://magnific.ai/?via=PLACEHOLDER_MAGNIFIC" rel="sponsored noopener" target="_blank" data-brand="magnific">
+            <div class="step-num">
+              <span class="step-num-label">02</span>
+              <i data-lucide="sparkles" class="step-num-icon"></i>
+            </div>
+            <div class="step-body">
+              <div class="step-action">enhance detail</div>
+              <div class="step-brand">Magnific AI</div>
+              <div class="step-desc">Restore textures, skin, hair, complex-scene fidelity during upscale. Best for portraits and busy compositions.</div>
+              <span class="step-cta">try Magnific <i data-lucide="arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a class="step-card" href="https://pollo.ai/?ref=PLACEHOLDER_POLLO" rel="sponsored noopener" target="_blank" data-brand="pollo">
+            <div class="step-num">
+              <span class="step-num-label">03</span>
+              <i data-lucide="film" class="step-num-icon"></i>
+            </div>
+            <div class="step-body">
+              <div class="step-action">bring it to life</div>
+              <div class="step-brand">Pollo AI</div>
+              <div class="step-desc">Turn your image into video with Kling, Runway, Veo, or Pika — one subscription covers every major model.</div>
+              <span class="step-cta">try Pollo <i data-lucide="arrow-right"></i></span>
+            </div>
+          </a>
+
           <p class="upsell-disclosure">Affiliate links — I earn a commission if you buy, at no extra cost to you. Helps keep this tool free.</p>
         </section>
 
-        <!-- pro waitlist (validation door) -->
-        <section class="pro-cta" aria-label="pro plan waitlist">
-          <div class="pro-cta-badge">coming soon</div>
-          <h3 class="pro-cta-title">Pro — $9 lifetime</h3>
-          <p class="pro-cta-body">Batch process up to 100 images at once. Auto-detect any future Gemini watermark layout. Support for SynthID-aware mode and other AI watermarks (Imagen, ChatGPT image, Sora) as they're added.</p>
+        <!-- pro waitlist (validation door, premium panel) -->
+        <section class="pro-panel" aria-label="pro plan waitlist">
+          <div class="pro-panel-header">
+            <span class="pro-badge"><i data-lucide="sparkles"></i> coming soon</span>
+            <span class="pro-scarcity">first 100 only</span>
+          </div>
+          <div class="pro-headline">
+            <h3>Pro</h3>
+            <div class="pro-price">
+              <span class="pro-amount">$9</span>
+              <span class="pro-tier">lifetime</span>
+            </div>
+          </div>
+          <p class="pro-tagline">Skip the manual workflow. One purchase locks in every future watermark layout — in batch.</p>
+          <ul class="pro-features">
+            <li><i data-lucide="check"></i> batch process up to 100 images at once</li>
+            <li><i data-lucide="check"></i> auto-detect any future Gemini watermark layout</li>
+            <li><i data-lucide="check"></i> SynthID-aware mode</li>
+            <li><i data-lucide="check"></i> Imagen, ChatGPT image, Sora support as added</li>
+          </ul>
           <a class="btn btn-primary pro-cta-btn" href="https://buy.stripe.com/PLACEHOLDER_STRIPE_LINK" data-event="pro-cta-click" rel="noopener" target="_blank">
-            Lock in $9 lifetime price
-            <i data-lucide="arrow-right"></i>
+            <i data-lucide="zap"></i>
+            lock in $9 lifetime
           </a>
-          <p class="pro-cta-fine">Refundable until launch. You'll be notified within 14 days when it ships.</p>
+          <p class="pro-fine">Refundable until launch. You'll be notified within 14 days when it ships.</p>
         </section>
       </div>
 
@@ -1311,11 +1553,12 @@
     }
 
     // ui elements
-    const consent = document.getElementById('consent');
+    const consentInline = document.getElementById('consentInline');
     const consentCheck = document.getElementById('consentCheck');
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
     const processor = document.getElementById('processor');
+    const resultMeta = document.getElementById('resultMeta');
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
     const batchList = document.getElementById('batchList');
@@ -1328,21 +1571,29 @@
     const sliderLine = document.getElementById('sliderLine');
     const sliderHandle = document.getElementById('sliderHandle');
 
-    // consent gate
+    // consent (inline above download — gates download only, never the upload)
     const CONSENT_KEY = 'rights-consent-v1';
 
     function applyConsent(on) {
       consentCheck.checked = on;
-      consent.classList.toggle('checked', on);
-      dropzone.classList.toggle('locked', !on);
-      fileInput.disabled = !on;
+      consentInline.classList.toggle('checked', on);
+      document.body.classList.toggle('consent-pending', !on);
     }
 
-    function nudgeConsent() {
-      consent.classList.remove('nudge');
-      void consent.offsetWidth; // restart animation
-      consent.classList.add('nudge');
+    function flashConsent() {
+      consentInline.classList.remove('attention');
+      void consentInline.offsetWidth;
+      consentInline.classList.add('attention');
       consentCheck.focus();
+      consentInline.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    function tryDownload(url, filename) {
+      if (!consentCheck.checked) {
+        flashConsent();
+        return;
+      }
+      downloadUrl(url, filename);
     }
 
     applyConsent(localStorage.getItem(CONSENT_KEY) === '1');
@@ -1357,7 +1608,6 @@
     // drag and drop
     dropzone.addEventListener('dragover', (e) => {
       e.preventDefault();
-      if (!consentCheck.checked) return;
       dropzone.classList.add('dragover');
     });
 
@@ -1368,10 +1618,6 @@
     dropzone.addEventListener('drop', (e) => {
       e.preventDefault();
       dropzone.classList.remove('dragover');
-      if (!consentCheck.checked) {
-        nudgeConsent();
-        return;
-      }
       handleFiles(e.dataTransfer.files);
     });
 
@@ -1380,10 +1626,6 @@
     });
 
     async function handleFiles(fileList) {
-      if (!consentCheck.checked) {
-        nudgeConsent();
-        return;
-      }
       const files = [...fileList].filter(f => f.type.startsWith('image/'));
       if (!files.length) return;
 
@@ -1429,11 +1671,12 @@
           dot.style.background = 'var(--success)';
           dot.style.animation = 'none';
 
-          // add individual download button
+          // add individual download button (gated)
           const dlBtn = document.createElement('button');
           dlBtn.className = 'batch-download';
           dlBtn.textContent = 'save';
-          dlBtn.onclick = () => downloadUrl(res.afterUrl, res.filename);
+          dlBtn.dataset.needsConsent = '';
+          dlBtn.onclick = () => tryDownload(res.afterUrl, res.filename);
           item.appendChild(dlBtn);
         } catch (err) {
           dot.style.background = 'var(--error)';
@@ -1459,48 +1702,40 @@
       beforeImg.src = last.beforeUrl;
       afterImg.src = last.afterUrl;
       result.classList.add('active');
+      resultMeta.textContent = `${last.width} × ${last.height} · png · exif stripped`;
 
       // reset slider
       afterWrap.style.width = '50%';
       sliderLine.style.left = '50%';
       sliderHandle.style.left = '50%';
 
-      // action buttons
+      // action buttons (single gated primary, styled to match Pro CTA when unlocked)
       if (results.length === 1) {
         actions.innerHTML = `
-          <button class="btn btn-primary" id="downloadBtn">
-            <i data-lucide="download"></i>
-            download cleaned image
-          </button>
-          <button class="btn btn-ghost" id="resetBtn">
-            new image
+          <button class="btn btn-primary btn-hero" id="downloadBtn" data-needs-consent>
+            <i data-lucide="download" class="icon-unlocked"></i>
+            <i data-lucide="lock" class="icon-locked"></i>
+            <span class="label-unlocked">download cleaned image</span>
+            <span class="label-locked">confirm rights to download</span>
           </button>
         `;
         lucide.createIcons();
-        document.getElementById('downloadBtn').onclick = () => downloadUrl(last.afterUrl, last.filename);
+        document.getElementById('downloadBtn').onclick = () => tryDownload(last.afterUrl, last.filename);
       } else {
         actions.innerHTML = `
-          <button class="btn btn-primary" id="downloadAllBtn">
-            <i data-lucide="download"></i>
-            download all (${results.length})
-          </button>
-          <button class="btn btn-ghost" id="resetBtn">
-            new batch
+          <button class="btn btn-primary btn-hero" id="downloadAllBtn" data-needs-consent>
+            <i data-lucide="download" class="icon-unlocked"></i>
+            <i data-lucide="lock" class="icon-locked"></i>
+            <span class="label-unlocked">download all (${results.length})</span>
+            <span class="label-locked">confirm rights to download (${results.length})</span>
           </button>
         `;
         lucide.createIcons();
         document.getElementById('downloadAllBtn').onclick = () => {
+          if (!consentCheck.checked) { flashConsent(); return; }
           results.forEach(r => downloadUrl(r.afterUrl, r.filename));
         };
       }
-
-      document.getElementById('resetBtn').onclick = () => {
-        processor.classList.remove('active');
-        result.classList.remove('active');
-        batchList.innerHTML = '';
-        actions.innerHTML = '';
-        fileInput.value = '';
-      };
     }
 
     // comparison slider
