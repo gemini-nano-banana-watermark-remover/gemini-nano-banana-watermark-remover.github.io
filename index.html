@@ -1228,7 +1228,7 @@
         <section class="pipeline" aria-label="next steps in your workflow">
           <h2 class="pipeline-title"><i data-lucide="git-branch" class="section-icon"></i> next steps in your workflow</h2>
 
-          <a class="step-card" href="https://topazlabs.com/ref/PLACEHOLDER_TOPAZ" rel="sponsored noopener" target="_blank" data-brand="topaz">
+          <a class="step-card" href="https://topazlabs.com/ref/PLACEHOLDER_TOPAZ" rel="sponsored noopener" target="_blank" data-brand="topaz" data-track="affiliate-topaz">
             <div class="step-num">
               <span class="step-num-label">01</span>
               <i data-lucide="zoom-in" class="step-num-icon"></i>
@@ -1241,7 +1241,7 @@
             </div>
           </a>
 
-          <a class="step-card" href="https://magnific.ai/?via=PLACEHOLDER_MAGNIFIC" rel="sponsored noopener" target="_blank" data-brand="magnific">
+          <a class="step-card" href="https://magnific.ai/?via=PLACEHOLDER_MAGNIFIC" rel="sponsored noopener" target="_blank" data-brand="magnific" data-track="affiliate-magnific">
             <div class="step-num">
               <span class="step-num-label">02</span>
               <i data-lucide="sparkles" class="step-num-icon"></i>
@@ -1254,7 +1254,7 @@
             </div>
           </a>
 
-          <a class="step-card" href="https://pollo.ai/?ref=PLACEHOLDER_POLLO" rel="sponsored noopener" target="_blank" data-brand="pollo">
+          <a class="step-card" href="https://pollo.ai/?ref=PLACEHOLDER_POLLO" rel="sponsored noopener" target="_blank" data-brand="pollo" data-track="affiliate-pollo">
             <div class="step-num">
               <span class="step-num-label">03</span>
               <i data-lucide="film" class="step-num-icon"></i>
@@ -1290,7 +1290,7 @@
             <li><i data-lucide="check"></i> SynthID-aware mode</li>
             <li><i data-lucide="check"></i> Imagen, ChatGPT image, Sora support as added</li>
           </ul>
-          <a class="btn btn-primary pro-cta-btn" href="https://buy.stripe.com/PLACEHOLDER_STRIPE_LINK" data-event="pro-cta-click" rel="noopener" target="_blank">
+          <a class="btn btn-primary pro-cta-btn" href="https://buy.stripe.com/PLACEHOLDER_STRIPE_LINK" data-event="pro-cta-click" data-track="pro-cta-click" rel="noopener" target="_blank">
             <i data-lucide="zap"></i>
             lock in $9 lifetime
           </a>
@@ -1404,7 +1404,7 @@
       <a href="https://github.com/gemini-nano-banana-watermark-remover/gemini-nano-banana-watermark-remover.github.io">source</a> ·
       based on <a href="https://github.com/GargantuaX/gemini-watermark-remover">GargantuaX</a> &
       <a href="https://github.com/allenk/GeminiWatermarkTool">allenk</a> ·
-      <a href="https://buymeacoffee.com/PLACEHOLDER_BMC" rel="noopener" target="_blank">☕ buy me a coffee</a>
+      <a href="https://buymeacoffee.com/PLACEHOLDER_BMC" rel="noopener" target="_blank" data-track="bmc">☕ buy me a coffee</a>
     </footer>
   </div>
 
@@ -1588,11 +1588,13 @@
       consentInline.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
 
-    function tryDownload(url, filename) {
+    function tryDownload(url, filename, eventName = 'download') {
       if (!consentCheck.checked) {
         flashConsent();
+        trackEvent('download-blocked');
         return;
       }
+      trackEvent(eventName);
       downloadUrl(url, filename);
     }
 
@@ -1604,6 +1606,19 @@
       else localStorage.removeItem(CONSENT_KEY);
       applyConsent(on);
     });
+
+    // goatcounter event tracking — paths are /event/<name>, marked event:true
+    function trackEvent(name) {
+      if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+        window.goatcounter.count({ path: '/event/' + name, event: true });
+      }
+    }
+
+    // delegate click tracking for any element marked with data-track="<name>"
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-track]');
+      if (el) trackEvent(el.dataset.track);
+    }, true);
 
     // drag and drop
     dropzone.addEventListener('dragover', (e) => {
@@ -1676,7 +1691,7 @@
           dlBtn.className = 'batch-download';
           dlBtn.textContent = 'save';
           dlBtn.dataset.needsConsent = '';
-          dlBtn.onclick = () => tryDownload(res.afterUrl, res.filename);
+          dlBtn.onclick = () => tryDownload(res.afterUrl, res.filename, 'download-single');
           item.appendChild(dlBtn);
         } catch (err) {
           dot.style.background = 'var(--error)';
@@ -1732,7 +1747,8 @@
         `;
         lucide.createIcons();
         document.getElementById('downloadAllBtn').onclick = () => {
-          if (!consentCheck.checked) { flashConsent(); return; }
+          if (!consentCheck.checked) { flashConsent(); trackEvent('download-blocked'); return; }
+          trackEvent('download-batch');
           results.forEach(r => downloadUrl(r.afterUrl, r.filename));
         };
       }
