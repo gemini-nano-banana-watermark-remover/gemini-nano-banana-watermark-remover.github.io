@@ -1136,6 +1136,36 @@
     /* hidden canvas */
     #processingCanvas { display: none; }
 
+    /* toast (used for placeholder/coming-soon links) */
+    .toast {
+      position: fixed;
+      bottom: 1.75rem;
+      left: 50%;
+      transform: translate(-50%, 10px);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.1rem;
+      border-radius: 10px;
+      background: var(--text);
+      color: var(--bg);
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 100;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+
     @media (max-width: 768px) {
       .info-grid { grid-template-columns: 1fr 1fr; }
     }
@@ -1411,6 +1441,11 @@
 
   <canvas id="processingCanvas"></canvas>
 
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <i data-lucide="sparkles"></i>
+    <span id="toastText"></span>
+  </div>
+
   <script>
     // watermark removal constants (matching the cli tool)
     const ALPHA_NOISE_FLOOR = 3 / 255;
@@ -1620,6 +1655,26 @@
       const el = e.target.closest('[data-track]');
       if (el) trackEvent(el.dataset.track);
     }, true);
+
+    // toast (used for placeholder links until the real urls land)
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    let toastTimer = null;
+    function showToast(message) {
+      toastText.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    // intercept any link still pointing at a PLACEHOLDER_ url, show a toast,
+    // let the tracking listener above still fire so we capture intent
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a[href*="PLACEHOLDER_"]');
+      if (!link) return;
+      e.preventDefault();
+      showToast('coming soon — link going live shortly');
+    });
 
     // drag and drop
     dropzone.addEventListener('dragover', (e) => {
