@@ -468,6 +468,78 @@
 
     .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
+    /* upsell (post-result affiliate strip) */
+    .upsell {
+      margin-top: 2.25rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .upsell-title {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+
+    .upsell-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .upsell-card {
+      display: block;
+      padding: 1.1rem 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.2s, background 0.2s;
+    }
+
+    .upsell-card:hover {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+      transform: translateY(-1px);
+    }
+
+    .upsell-card-icon {
+      width: 22px;
+      height: 22px;
+      color: var(--accent);
+      margin-bottom: 0.65rem;
+      display: block;
+    }
+
+    .upsell-card-tag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-bottom: 0.2rem;
+    }
+
+    .upsell-card-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .upsell-card-desc {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    .upsell-disclosure {
+      margin-top: 0.85rem;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      opacity: 0.7;
+    }
+
     /* info section */
     .info {
       margin-top: 3rem;
@@ -810,6 +882,7 @@
 
     @media (max-width: 768px) {
       .info-grid { grid-template-columns: 1fr 1fr; }
+      .upsell-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 640px) {
@@ -882,6 +955,32 @@
         </div>
 
         <div class="actions" id="actions"></div>
+
+        <!-- post-clean affiliate strip -->
+        <section class="upsell" aria-label="recommended next steps">
+          <h3 class="upsell-title">now that your image is clean...</h3>
+          <div class="upsell-grid">
+            <a class="upsell-card" href="https://topazlabs.com/ref/PLACEHOLDER_TOPAZ" rel="sponsored noopener" target="_blank">
+              <i data-lucide="zoom-in" class="upsell-card-icon"></i>
+              <div class="upsell-card-tag">upscale to 4K</div>
+              <div class="upsell-card-name">Topaz Gigapixel</div>
+              <div class="upsell-card-desc">Industry-standard AI upscaler. Take your clean Gemini image to print resolution.</div>
+            </a>
+            <a class="upsell-card" href="https://magnific.ai/?via=PLACEHOLDER_MAGNIFIC" rel="sponsored noopener" target="_blank">
+              <i data-lucide="sparkles" class="upsell-card-icon"></i>
+              <div class="upsell-card-tag">add detail</div>
+              <div class="upsell-card-name">Magnific AI</div>
+              <div class="upsell-card-desc">Add realistic detail and texture during upscale. Best for portraits and complex scenes.</div>
+            </a>
+            <a class="upsell-card" href="https://pollo.ai/?ref=PLACEHOLDER_POLLO" rel="sponsored noopener" target="_blank">
+              <i data-lucide="film" class="upsell-card-icon"></i>
+              <div class="upsell-card-tag">animate it</div>
+              <div class="upsell-card-name">Pollo AI</div>
+              <div class="upsell-card-desc">Turn your image into video with Kling, Runway, Veo, or Pika — one subscription.</div>
+            </a>
+          </div>
+          <p class="upsell-disclosure">Affiliate links — I earn a commission if you buy, at no extra cost to you. Helps keep this tool free.</p>
+        </section>
       </div>
 
       <!-- info -->
