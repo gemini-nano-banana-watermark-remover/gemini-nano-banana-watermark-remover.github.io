@@ -178,6 +178,50 @@
       padding: 3rem 0 4rem;
     }
 
+    /* consent gate */
+    .consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      line-height: 1.5;
+    }
+
+    .consent:hover { border-color: var(--border-hover); }
+
+    .consent input {
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .consent.checked {
+      border-color: var(--success);
+      color: var(--text);
+    }
+
+    .consent.nudge {
+      animation: nudge 0.4s ease-in-out;
+      border-color: var(--error);
+    }
+
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
     /* drop zone */
     .dropzone {
       border: 2px dashed var(--border);
@@ -193,6 +237,17 @@
     .dropzone:hover, .dropzone.dragover {
       border-color: var(--accent);
       background: var(--accent-dim);
+    }
+
+    .dropzone.locked {
+      opacity: 0.55;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+
+    .dropzone.locked:hover {
+      border-color: var(--border);
+      background: var(--surface);
     }
 
     .dropzone.dragover {
@@ -701,6 +756,26 @@
       border-radius: 4px;
     }
 
+    /* legal notice (between faq and about) */
+    .legal-notice {
+      margin-top: 2.5rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .legal-notice p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .legal-notice strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
     /* about */
     .about {
       margin-top: 2.5rem;
@@ -765,12 +840,18 @@
     </header>
 
     <main>
+      <!-- consent gate -->
+      <label class="consent" id="consent" for="consentCheck">
+        <input type="checkbox" id="consentCheck">
+        <span>I confirm these images are my own AI-generated content or content I have rights to.</span>
+      </label>
+
       <!-- drop zone -->
-      <div class="dropzone" id="dropzone">
+      <div class="dropzone locked" id="dropzone">
         <i data-lucide="upload" class="dropzone-icon"></i>
         <div class="dropzone-text">drop images here or click to upload</div>
         <div class="dropzone-hint">png, jpg, webp — multiple files supported — nothing leaves your device</div>
-        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple disabled>
       </div>
 
       <!-- processing -->
@@ -891,6 +972,11 @@
           </details>
         </div>
       </div>
+
+      <!-- legal notice -->
+      <aside class="legal-notice" aria-label="intended use">
+        <p><strong>Intended use:</strong> This tool is provided for removing watermarks from AI-generated images you have created yourself, or images you otherwise have rights to. Removing watermarks from copyrighted stock photos, third-party licensed imagery, or other content you do not own may violate copyright law (including DMCA §1202 in the US and Directive 2001/29/EC Article 7 in the EU) and is not the intended use of this tool.</p>
+      </aside>
 
       <!-- about -->
       <section class="about" id="about">
@@ -1052,6 +1138,8 @@
     }
 
     // ui elements
+    const consent = document.getElementById('consent');
+    const consentCheck = document.getElementById('consentCheck');
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
     const processor = document.getElementById('processor');
@@ -1067,9 +1155,36 @@
     const sliderLine = document.getElementById('sliderLine');
     const sliderHandle = document.getElementById('sliderHandle');
 
+    // consent gate
+    const CONSENT_KEY = 'rights-consent-v1';
+
+    function applyConsent(on) {
+      consentCheck.checked = on;
+      consent.classList.toggle('checked', on);
+      dropzone.classList.toggle('locked', !on);
+      fileInput.disabled = !on;
+    }
+
+    function nudgeConsent() {
+      consent.classList.remove('nudge');
+      void consent.offsetWidth; // restart animation
+      consent.classList.add('nudge');
+      consentCheck.focus();
+    }
+
+    applyConsent(localStorage.getItem(CONSENT_KEY) === '1');
+
+    consentCheck.addEventListener('change', () => {
+      const on = consentCheck.checked;
+      if (on) localStorage.setItem(CONSENT_KEY, '1');
+      else localStorage.removeItem(CONSENT_KEY);
+      applyConsent(on);
+    });
+
     // drag and drop
     dropzone.addEventListener('dragover', (e) => {
       e.preventDefault();
+      if (!consentCheck.checked) return;
       dropzone.classList.add('dragover');
     });
 
@@ -1080,6 +1195,10 @@
     dropzone.addEventListener('drop', (e) => {
       e.preventDefault();
       dropzone.classList.remove('dragover');
+      if (!consentCheck.checked) {
+        nudgeConsent();
+        return;
+      }
       handleFiles(e.dataTransfer.files);
     });
 
@@ -1088,6 +1207,10 @@
     });
 
     async function handleFiles(fileList) {
+      if (!consentCheck.checked) {
+        nudgeConsent();
+        return;
+      }
       const files = [...fileList].filter(f => f.type.startsWith('image/'));
       if (!files.length) return;
 
